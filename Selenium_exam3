@@ -41,13 +41,11 @@ def Search():
     return search
 
 # 
-count = 0
-while count <= TotalPage():
-    for i in Search(): # 迴圈將第count頁寫入txt檔
-        with open('exam3.txt','a+',encoding='UTF-8') as fp:
-            fp.write(i.text + '\n')
+for page in range(TotalPage()):
+    # for i in Search(): # 迴圈將第count頁寫入txt檔
+    #     with open('exam3.txt','a+',encoding='UTF-8') as fp:
+    #         fp.write(i.text + '\n')
     driver.find_element(By.CLASS_NAME,"right").click() #事件：點擊下一頁
-    count +=1
     time.sleep(random.uniform(2,10))
 driver.quit()
 
