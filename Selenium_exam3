@@ -1,47 +1,55 @@
-import importlib
+
+from itertools import count
+import pstats
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys #模擬鍵盤上按鍵
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
+from bs4 import BeautifulSoup
+import numpy as np
 import time,random
+# import importlib
 
-
-#檢查當前版本的chromedriver是否存在 # 如果不存在，則自動下載， # 然後將 chromedriver 添加到路徑
-#chromedriver_autoinstaller.install()
-# options = Options() 
-# options.add_argument('--headless')
-
+#
 chrome_driver_path = 'D:\\chromedriver\chromedriver.exe'
 driver = webdriver.Chrome(chrome_driver_path)
 
 #連線到目標網站 等待1秒
 url = "https://gogakuru.com/english/phrase/genre/180_%E5%88%9D%E7%B4%9A%E3%83%AC%E3%83%99%E3%83%AB.html?layoutPhrase=1&orderPhrase=1&condMovie=0&flow=enSearchGenre&condGenre=180&perPage=50"
 driver.get(url)
-driver.implicitly_wait(10)
+driver.implicitly_wait(1)
+
+#爬取Total Page
+def TotalPage():
+    soup = BeautifulSoup(driver.page_source,'lxml') 
+    pages = soup.select('span.pagelist > select > option') #觀察html後擷取 options裡的pageID
+    pagelist = []
+    for page in pages:
+        #用例外處理非整數的資料，只留下整數頁數
+        try:
+            pagelist.append(int(page.text))
+        except:
+            pass
+    totalpage = int(np.max(pagelist)) #取得頁數total
+    return totalpage
 
 # 搜尋class name為font-en的陣列search
+def Search():
+    search = driver.find_elements(By.CLASS_NAME, "font-en")  # 搜尋class name為font-en的陣列search
+    return search
 
-#練習物件
-# def serch(name):
-#     search = driver.find_elements(By.CLASS_NAME, "font-en")
-#     return search
-
-# 思考迴圈寫入txt檔
-search = driver.find_elements(By.CLASS_NAME, "font-en")
-for i in search:
-    print(i.text)
-
-# 事件：點擊下一頁
-driver.find_element(By.CLASS_NAME,"right").click()
-
-search = driver.find_elements(By.CLASS_NAME, "font-en")
-for i in search:
-    print(i.text)
-
+# 
+count = 0
+while count <= TotalPage():
+    for i in Search(): # 迴圈將第count頁寫入txt檔
+        with open('exam3.txt','a+',encoding='UTF-8') as fp:
+            fp.write(i.text + '\n')
+    driver.find_element(By.CLASS_NAME,"right").click() #事件：點擊下一頁
+    count +=1
+    time.sleep(random.uniform(2,10))
 driver.quit()
-
 
 # keyword.clear()
 # time.sleep(random.uniform(2,10))
