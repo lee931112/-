@@ -1,20 +1,19 @@
-
-from itertools import count
-import pstats
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys #模擬鍵盤上按鍵
-from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
-import numpy as np
 import time,random
-# import importlib
+import chromedriver_autoinstaller #引入自動升級驅動程式套件
+import numpy as np
 
-#
-chrome_driver_path = 'D:\\chromedriver\chromedriver.exe'
-driver = webdriver.Chrome(chrome_driver_path)
+#檢查當前版本的chromedriver是否存在 # 如果不存在，則自動下載， # 然後將 chromedriver 添加到路徑
+chromedriver_autoinstaller.install()
+options = Options() 
+options.add_argument('--headless')
+driver = webdriver.Chrome(options=options)
+
 
 #連線到目標網站 等待1秒
 url = "https://gogakuru.com/english/phrase/genre/180_%E5%88%9D%E7%B4%9A%E3%83%AC%E3%83%99%E3%83%AB.html?layoutPhrase=1&orderPhrase=1&condMovie=0&flow=enSearchGenre&condGenre=180&perPage=50"
@@ -42,23 +41,9 @@ def Search():
 
 # 
 for page in range(TotalPage()):
-    # for i in Search(): # 迴圈將第count頁寫入txt檔
-    #     with open('exam3.txt','a+',encoding='UTF-8') as fp:
-    #         fp.write(i.text + '\n')
+    for i in Search(): # 迴圈將第count頁寫入txt檔
+        with open('exam3.txt','a+',encoding='UTF-8') as fp:
+            fp.write(i.text + '\n')
     driver.find_element(By.CLASS_NAME,"right").click() #事件：點擊下一頁
-    time.sleep(random.uniform(2,10))
+    time.sleep(random.uniform(1,4))
 driver.quit()
-
-# keyword.clear()
-# time.sleep(random.uniform(2,10))
-# keyword.send_keys(Q)
-# keyword.send_keys(Keys.ENTER)
-
-# time.sleep(3)
-# driver.find_element("name", "q").send_keys(Keys.ENTER)
-
-# items = driver.find_element('xpath',"//div[@class='yuRUbf']/a/h3[@class='LC20lb MBeuO DKV0Md']")
-
-# for i,items  in enumerate(items):
-#     print(i,items.text)
-# driver.quit()
