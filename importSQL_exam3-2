@@ -1,0 +1,16 @@
+import pymysql
+with open('exam3.txt','r',encoding='utf8') as fp :
+    content_list = fp.readlines() # list 可跌代取出
+
+connect_db = pymysql.connect(host='34.125.95.100',port=3306,user='root',passwd='dv102',charset='utf8',db='crwaler_project')
+with connect_db.cursor() as cursor:
+    sql='''creat table if not exists word_list(
+        id int not null primary key auto_increment,
+        word_list varchar(100));'''
+    cursor.execute(sql)
+    for x in content_list:
+        print(x)
+        cursor.execute('insert into content_list (content_list) values(%s)',x)
+        connect_db.commit()
+    connect_db.close()
+    
